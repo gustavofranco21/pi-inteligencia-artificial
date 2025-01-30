@@ -1,68 +1,6 @@
-async function obterEventos() {
-    const eventosEndpoint = '/evento'; // Endpoint no backend
-    const URLCompleta = `http://localhost:3000${eventosEndpoint}`; // URL completa para a requisição
-
-    try {
-        // Requisição ao backend
-        const resposta = await axios.get(URLCompleta);
-        const eventos = resposta.data;
-
-        console.log("Eventos recebidos:", eventos); // Para verificar a resposta no console
-
-        // Atualiza o container de eventos
-        const eventosContainer = document.querySelector('#eventosContainer');
-        eventosContainer.innerHTML = '';
-
-        // Itera pelos eventos e adiciona ao DOM
-        for (let evento of eventos) {
-            // Criação da coluna responsiva
-            let coluna = document.createElement('div');
-            coluna.classList.add('col-12', 'col-md-6', 'col-lg-4', 'mb-4'); // Responsividade ajustada
-
-            // Criação do card
-            let card = document.createElement('div');
-            card.classList.add('card', 'h-100', 'shadow-sm'); // Card com altura ajustável e sombra
-
-            // Adição da imagem ao card
-            let imagem = document.createElement('img');
-            imagem.classList.add('card-img-top', 'img-fluid');
-            imagem.src = evento.url_logo; // URL da imagem
-            imagem.alt = evento.nome; // Nome do evento
-
-            // Adiciona a funcionalidade de clique
-            imagem.onclick = function () {
-                exibirEventoPorId(evento._id); // Passa o ID do evento para a função
-            };
-
-            // Criação do corpo do card
-            let cardBody = document.createElement('div');
-            cardBody.classList.add('card-body', 'text-center');
-
-            // Adição do título do evento
-            let titulo = document.createElement('h5');
-            titulo.classList.add('card-title');
-            titulo.textContent = evento.nome;
-
-            // Montagem do card
-            cardBody.appendChild(titulo);
-            card.appendChild(imagem);
-            card.appendChild(cardBody);
-            coluna.appendChild(card);
-
-            // Adicionando a coluna ao container principal
-            eventosContainer.appendChild(coluna);
-        }
-    } catch (error) {
-        // Tratamento de erros
-        console.error("Erro ao obter os eventos:", error.response?.data || error.message);
-        alert("Erro ao carregar os eventos. Verifique sua conexão e tente novamente.");
-    }
-}
-
-
 async function exibirEventoPorId(eventoId) {
     const eventoEndpoint = `/evento/${eventoId}`; 
-    const URLCompleta = `http://localhost:3000${eventoEndpoint}`;
+    const URLCompleta = `http://localhost:3005${eventoEndpoint}`;
 
     try {
         const evento = (await axios.get(URLCompleta)).data;
@@ -71,12 +9,12 @@ async function exibirEventoPorId(eventoId) {
         const modal = document.querySelector('#eventoModal');
         const modalTitulo = document.querySelector('#modalTitulo');
         const modalDescricao = document.querySelector('#modalDescricao');
-        const modalImagem = document.querySelector('#modalImagem');
+       
         const modalBotaoVerMais = document.querySelector('#modalVerMais');
 
         modalTitulo.textContent = evento.nome;
         modalDescricao.textContent = evento.descricao;
-        modalImagem.src = evento.url_logo;
+        
         modalBotaoVerMais.onclick = function () {
             window.location.href = `detalhe_evento.html?id=${evento._id}`;
         };
@@ -99,7 +37,7 @@ function fecharModal() {
 
 
 // Garante que a função seja chamada após carregar o DOM
-document.addEventListener('DOMContentLoaded', obterEventos);
+
 
 // Função para verificar se o usuário está logado
 function verificarLogin() {

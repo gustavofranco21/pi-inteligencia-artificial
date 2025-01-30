@@ -2,7 +2,7 @@ async function postEvent(event) {
     event.preventDefault();  // Evita que o formulário seja enviado de forma tradicional
 
     const eventosEndpoint = '/eventos';  // Endpoint onde os eventos são cadastrados
-    const URLCompleta = `http://localhost:3000${eventosEndpoint}`;
+    const URLCompleta = `http://localhost:3005${eventosEndpoint}`;
 
     let nomeEventoInput = document.querySelector('#nome');
     let telefoneInput = document.querySelector('#telefone');
@@ -42,37 +42,23 @@ async function postEvent(event) {
         enderecoInput.value = "";
         categoriaInput.value = "";
 
+        const form = event.target;
+        const formData = new FormData(form);
+    
         try {
-            const response = await axios.post(URLCompleta, {
-                nome,
-                telefone,
-                numero,
-                cep,
-                url_logo,
-                preco,
-                complemento,
-                ingresso,
-                descricao,
-                endereco,
-                categoria
+            const response = await axios.post("http://localhost:3005/eventos", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
-
-            const eventos = response.data;
-
-            exibirAlerta('.alert-evento', 'Evento cadastrado com sucesso', ['show', 'alert-success'], ['d-none'], 2000);
-
+    
+            console.log(response.data);
+            exibirAlerta(".alert-evento", "Evento cadastrado com sucesso!", ["show", "alert-success"], ["d-none"], 2000);
         } catch (error) {
-            console.error(error);
-            exibirAlerta('.alert-evento', 'Erro ao cadastrar evento', ['show', 'alert-danger'], ['d-none'], 2000);
+            console.error("Erro ao cadastrar evento:", error.response?.data || error.message);
+            exibirAlerta(".alert-evento", "Erro ao cadastrar evento", ["show", "alert-danger"], ["d-none"], 2000);
         }
-
-    } else {
-        exibirAlerta('.alert-evento', 'Preencha todos os campos corretamente', ['show', 'alert-danger'], ['d-none'], 2000);
-    }
-}
-
-document.getElementById('eventoForm').addEventListener('submit', postEvent);
-
+    };
 function exibirAlerta(seletor, innerHTML, classesToAdd, classesToRemove, timeout) {
     let alert = document.querySelector(seletor);
 
@@ -89,3 +75,32 @@ function exibirAlerta(seletor, innerHTML, classesToAdd, classesToRemove, timeout
         console.error("Elemento de alerta não encontrado. Verifique o seletor:", seletor);
     }
 }
+
+const protocolo = 'http://'
+const baseURL = 'localhost:3005'
+
+const form = document.getElementById('eventoForm')
+form.addEventListener('submit', async function (event) {
+    event.preventDefault()
+
+    const form = event.target
+    const formData = new FormData(form)
+
+    try {
+        const eventEndpoint = '/eventos'
+        const URLCompleta = `${protocolo}${baseURL}${eventEndpoint}`
+
+        const resposta = (await axios.post(URLCompleta, formData, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }))
+
+        console.log(resposta)
+       
+    } catch (error) {
+        console.log(error)
+        
+    }
+})}

@@ -70,48 +70,48 @@ body {
             <!-- Adiciona os alertas aqui -->
             <div class="alert alert-success d-none alert-evento" role="alert"></div>
             <div class="alert alert-danger d-none alert-evento" role="alert"></div>
-            <form id="eventoForm">
+            <form id="eventoForm" enctype="multipart/form-data">
               <!-- Nome -->
               <div class="mb-3">
                   <label for="nome" class="form-label">Nome</label>
-                  <input type="text" class="form-control" id="nome" placeholder="Digite o nome do evento">
+                  <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome do evento">
               </div>
               <!-- Telefone -->
               <div class="mb-3">
                   <label for="telefone" class="form-label">Telefone para dúvidas</label>
-                  <input type="text" class="form-control" id="telefone" placeholder="Digite o telefone">
+                  <input type="text" class="form-control" id="telefone" name="telefone" placeholder="Digite o telefone">
               </div>
               <!-- Endereço -->
               <div class="mb-3">
                   <label for="endereco" class="form-label">Endereço</label>
-                  <input type="text" class="form-control" id="endereco" placeholder="Digite o endereço">
+                  <input type="text" class="form-control" id="endereco" name="endereco" placeholder="Digite o endereço">
               </div>
               <!-- Número e CEP -->
               <div class="row">
                   <div class="col-4 mb-3">
                       <label for="numero" class="form-label">N°</label>
-                      <input type="text" class="form-control" id="numero" placeholder="Número">
+                      <input type="text" class="form-control" id="numero" name="numero" placeholder="Número">
                   </div>
                   <div class="col-8 mb-3">
                       <label for="cep" class="form-label">CEP</label>
-                      <input type="text" class="form-control" id="cep" placeholder="CEP">
+                      <input type="text" class="form-control" id="cep" name="cep" placeholder="CEP">
                   </div>
               </div>
               <!-- Valor e Complemento -->
               <div class="row">
                   <div class="col-6 mb-3">
                       <label for="valor" class="form-label">Valor</label>
-                      <input type="text" class="form-control" id="valor" placeholder="Valor">
+                      <input type="text" class="form-control" id="valor" name="valor" placeholder="Valor">
                   </div>
                   <div class="col-6 mb-3">
                       <label for="complemento" class="form-label">Complemento</label>
-                      <input type="text" class="form-control" id="complemento" placeholder="Complemento">
+                      <input type="text" class="form-control" id="complemento" name="complemento" placeholder="Complemento">
                   </div>
               </div>
           
               <div class="mb-3">
                   <label for="categoria" class="form-label">Categoria</label>
-                  <select class="form-select" id="categoria" required>
+                  <select class="form-select" id="categoria" name="categoria" required>
                       <option value="" selected disabled>Escolha uma categoria</option>
                       <option value="Festas">Festas</option>
                       <option value="bazar">Bazar</option>
@@ -125,18 +125,18 @@ body {
               <!-- Quantidade de ingressos -->
               <div class="mb-3">
                   <label for="qtd-ingresso" class="form-label">Quantidade de ingressos</label>
-                  <input type="number" class="form-control" id="qtd-ingresso" placeholder="Digite a quantidade">
+                  <input type="number" class="form-control" id="qtd-ingresso" name="qtd-ingresso" placeholder="Digite a quantidade">
               </div>
               <!-- link -->
               <div class="mb-3">
                   <label for="banner" class="form-label">URL do banner</label>
-                  <input type="url" class="form-control" id="banner" placeholder="Ex.: https://example.com/banner.jpg" required>
+                  <input type="file" class="form-control" id="banner" name="img" accept="image/*" placeholder="Ex.: https://example.com/banner.jpg" required>
               </div>
           
               <!-- Descrição -->
               <div class="mb-3">
                   <label for="descricao" class="form-label">Descrição</label>
-                  <textarea class="form-control" id="descricao" rows="4" placeholder="Escreva a descrição do evento"></textarea>
+                  <textarea class="form-control" id="descricao" name="descricao" rows="4" placeholder="Escreva a descrição do evento"></textarea>
               </div>
               
               <!-- Botão de cadastro -->
