@@ -6,6 +6,10 @@ const mongoose = require('mongoose');
 const app = express()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const bodyParser = require('body-parser')
+const fs = require('fs')
+const path = require('path')
+app.set("view engine", "ejs")
 
 const uniqueValidator = require('mongoose-unique-validator')
 
@@ -14,6 +18,22 @@ app.use(cors())
 const port = 3005;
 dotenv.config();
 const uri = process.env.MONGODB_URL
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+const multer = require('multer')
+
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname + '-' + Date.now())
+    }
+})
+
+var upload = multer({ storage: storage })
 //const uri = 'mongodb://root:senha@mongo:27017/eventosgrupo5'
 
 const PointSchema = new mongoose.Schema({
@@ -33,7 +53,11 @@ const Evento = mongoose.model('Evento', mongoose.Schema({
     telefone: String,
     numero: Number,
     cep: String,
-    url_logo: String,
+    img:
+    {
+        data: Buffer,
+        contentType: String
+    },
     preco: Number,
     complemento: String,
     ingresso: Number,
@@ -99,9 +123,9 @@ app.get("/eventosCat", async (req, res) => {
         res.status(500).json({ mensagem: "Erro ao buscar eventos" });
     }
 });
-app.post("/eventos", async (req, res) => {
+app.post("/eventos",upload.single('img'), async (req, res) => {
     try {
-        const { nome, telefone, numero, cep, url_logo, preco, complemento, ingresso, descricao, endereco, categoria } = req.body;
+        const { nome, telefone, numero, cep, preco, complemento, ingresso, descricao, endereco, categoria } = req.body;
 
         // Criar o evento com os dados fornecidos
         const evento = new Evento({
@@ -109,7 +133,10 @@ app.post("/eventos", async (req, res) => {
             telefone: telefone,
             numero: numero,
             cep: cep,
-            url_logo: url_logo,
+            img: {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+                contentType: req.file.mimetype
+            },
             preco: preco,
             complemento: complemento,
             ingresso: ingresso,
@@ -188,10 +215,10 @@ app.post("/login", async (req, res) => {
 }
 
         // Gerar um token JWT
-        const token = jwt.sign({ userId: usuario._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+       //const token = jwt.sign({ userId: usuario._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Retorna o token no login
-        res.json({ mensagem: "Login bem-sucedido", token });
+        res.json({ mensagem: "Login bem-sucedido" });
 
                 } catch (error) {
                     console.error("Erro ao realizar login:", error);
@@ -199,6 +226,27 @@ app.post("/login", async (req, res) => {
 }
 });
 
+app.get('/eventos', async(req, res) => {
+    Evento.find({})
+    .then((data, err) => {
+        let retorno = []
+        data.forEach(function(item) {
+            var item = {
+                nome: item.nome,
+                img: {
+                    data: item.img.data.toString('base64'),
+                    contentType: item.img.contentType
+                }
+            }
+
+            retorno.push(item)
+        })
+
+        console.log(JSON.stringify(retorno))
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(retorno))
+    })
+})
 
 
 async function conectarAoMongo() {
