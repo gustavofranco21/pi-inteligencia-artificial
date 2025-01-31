@@ -3,7 +3,7 @@ async function postUser(user) {
 
     // URL do endpoint para cadastro do organizador
     const usuarioEndpoint = '/usuario';
-    const URLCompleta = `http://localhost:3000${usuarioEndpoint}`;
+    const URLCompleta = `http://localhost:3005${usuarioEndpoint}`;
 
     // Captura os valores dos campos do formulário
     let nomeInput = document.querySelector('#nome');

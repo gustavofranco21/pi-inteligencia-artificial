@@ -1,40 +1,33 @@
-const express = require('express')
-
+const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const app = express()
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const bodyParser = require('body-parser')
-const fs = require('fs')
-const path = require('path')
-app.set("view engine", "ejs")
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 
-const uniqueValidator = require('mongoose-unique-validator')
-
-app.use(express.json())
-app.use(cors())
-const port = 3005;
 dotenv.config();
-const uri = process.env.MONGODB_URL
+const app = express();
+const port = 3005;
+const uri = process.env.MONGODB_URL;
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-const multer = require('multer')
-
+// Configuração de armazenamento com multer
 var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname + '-' + Date.now())
-    }
-})
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname + '-' + Date.now());
+  }
+});
+var upload = multer({ storage: storage });
 
-var upload = multer({ storage: storage })
-//const uri = 'mongodb://root:senha@mongo:27017/eventosgrupo5'
+
 
 const PointSchema = new mongoose.Schema({
     type: {
@@ -48,15 +41,15 @@ const PointSchema = new mongoose.Schema({
     }
 });
 
+// Modelo do Evento
 const Evento = mongoose.model('Evento', mongoose.Schema({
     nome: String,
     telefone: String,
     numero: Number,
     cep: String,
-    img:
-    {
-        data: Buffer,
-        contentType: String
+    img: {
+      data: Buffer,
+      contentType: String
     },
     preco: Number,
     complemento: String,
@@ -64,7 +57,7 @@ const Evento = mongoose.model('Evento', mongoose.Schema({
     descricao: String,
     endereco: String,
     categoria: String
-}));
+  }));
 const Usuario = mongoose.model('Usuario', mongoose.Schema({
     nome: String,
     email: { type: String, required: true, unique: true },
@@ -123,41 +116,35 @@ app.get("/eventosCat", async (req, res) => {
         res.status(500).json({ mensagem: "Erro ao buscar eventos" });
     }
 });
-app.post("/eventos",upload.single('img'), async (req, res) => {
+// Endpoints
+app.post("/eventos", upload.single('img'), async (req, res) => {
     try {
-        const { nome, telefone, numero, cep, preco, complemento, ingresso, descricao, endereco, categoria } = req.body;
-
-        // Criar o evento com os dados fornecidos
-        const evento = new Evento({
-            nome: nome,
-            telefone: telefone,
-            numero: numero,
-            cep: cep,
-            img: {
-                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-                contentType: req.file.mimetype
-            },
-            preco: preco,
-            complemento: complemento,
-            ingresso: ingresso,
-            descricao: descricao,
-            endereco: endereco,
-            categoria: categoria
-        })
-
-        // Salvar o evento no banco
-        await evento.save()
-
-        // Buscar todos os eventos após a inserção
-        const eventos = await Evento.find()
-
-        // Retornar todos os eventos cadastrados
-        res.json(eventos)
+      const { nome, telefone, numero, cep, preco, complemento, ingresso, descricao, endereco, categoria } = req.body;
+  
+      const evento = new Evento({
+        nome: nome,
+        telefone: telefone,
+        numero: numero,
+        cep: cep,
+        img: {
+          data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+          contentType: 'image/*'
+        },
+        preco: preco,
+        complemento: complemento,
+        ingresso: ingresso,
+        descricao: descricao,
+        endereco: endereco,
+        categoria: categoria
+      });
+  
+      await evento.save();
+      res.status(201).json({ mensagem: "Evento cadastrado com sucesso!" });
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ mensagem: "Erro ao salvar evento" })
+      console.log(error);
+      res.status(500).json({ mensagem: "Erro ao salvar evento" });
     }
-})
+  });
 app.post("/usuario", async (req, res) => {
     try {
         const { nome, email, senha, telefone, cnpj, cep, complemento, endereco, numero, } = req.body;
