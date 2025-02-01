@@ -10,7 +10,9 @@ async function postEvent(event) {
         "Content-Type": "multipart/form-data",
       },
     });
-
+    setTimeout(() => {
+      window.location.href = '/';
+  }, 2000);
     console.log(response.data);
     exibirAlerta(".alert-evento", "Evento cadastrado com sucesso!", ["show", "alert-success"], ["d-none"], 2000);
   } catch (error) {
@@ -37,3 +39,59 @@ function exibirAlerta(seletor, innerHTML, classesToAdd, classesToRemove, timeout
 
 const form = document.getElementById('eventoForm');
 form.addEventListener('submit', postEvent);
+
+const GEMINI_KEY = "AIzaSyBZlfyva_dGdPFIzPomwMccqV9OTX2J3Ck";
+
+async function gerarNomeEvento(prompt) {
+  try {
+      const response = await axios.post(
+          `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+          {
+              contents: [
+                  {
+                      role: "user",
+                      parts: [
+                          {
+                              text: `${prompt}. Não forneça sugestões múltiplas, apenas um nome específico.`
+                          }
+                      ]
+                  }
+              ]
+          },
+          {
+              headers: { "Content-Type": "application/json" }
+          }
+      );
+
+      console.log("Resposta da API:", response.data);
+
+      const nomeGerado = response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+      return nomeGerado || "Nome não gerado";
+  } catch (error) {
+      console.error("Erro ao gerar nome do evento:", error.response?.data || error.message);
+      return "";
+  }
+}
+
+async function gerarNomeAoClicar() {
+    const promptNome = document.getElementById("promptNome").value;
+    const nomeInput = document.getElementById("nome");
+
+    if (!promptNome || !descricao) {
+        alert("Preencha o prompt antes de gerar um nome.");
+        return;
+    }
+
+    nomeInput.value = "Gerando nome..."; 
+    const nomeGerado = await gerarNomeEvento(promptNome);
+    
+    if (nomeGerado) {
+        nomeInput.value = nomeGerado;  
+    } else {
+        nomeInput.value = ""; 
+        alert("Erro ao gerar nome do evento. Tente novamente.");
+    }
+}
+
+document.getElementById("btnGerarNome").addEventListener("click", gerarNomeAoClicar);

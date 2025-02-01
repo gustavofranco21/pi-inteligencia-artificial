@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const { error } = require('console');
 
 dotenv.config();
 const app = express();

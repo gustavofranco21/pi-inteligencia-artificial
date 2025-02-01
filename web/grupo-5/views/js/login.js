@@ -26,7 +26,7 @@ async function loginUser(event) {
 
             // Redireciona para a página principal após login
             setTimeout(() => {
-                window.location.href = 'index-05.html';
+                window.location.href = '/';
             }, 2000);
 
         } catch (error) {
